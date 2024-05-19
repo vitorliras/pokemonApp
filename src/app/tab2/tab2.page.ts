@@ -17,6 +17,10 @@ export class Tab2Page implements ViewDidEnter {
   pokemon!: Pokemon | null;
   pokemons: Pokemon[] = [];
 
+  pokemonsPaginados: Pokemon[] = [];
+  paginaAtual: number = 1;
+  qtdPokemonPorPagina: number = 6;
+
   batalhaNova: boolean = false
 
   constructor(
@@ -35,6 +39,7 @@ export class Tab2Page implements ViewDidEnter {
     this.pokemonService.meusPokemons().subscribe((pokemons) => {
       if (pokemons.length > 0) {
         this.pokemons = pokemons;
+        this.paginarPokemons();
         this.abrirModal();
       } else {
         this.util.mostrarMensagem('Você não possui nenhum pokemon, logo não poderar batalhar!', 'warning' );
@@ -93,5 +98,25 @@ export class Tab2Page implements ViewDidEnter {
 
   addPhotoToGallery() {
     this.photoService.addNewToGallery();
+  }
+
+  paginarPokemons() {
+    const startIndex = (this.paginaAtual - 1) * this.qtdPokemonPorPagina;
+    const endIndex = startIndex + this.qtdPokemonPorPagina;
+    this.pokemonsPaginados = this.pokemons.slice(startIndex, endIndex);
+  }
+
+  proximaPagina() {
+    if ((this.paginaAtual * this.qtdPokemonPorPagina) < this.pokemons.length) {
+      this.paginaAtual++;
+      this.paginarPokemons();
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual > 1) {
+      this.paginaAtual--;
+      this.paginarPokemons();
+    }
   }
 }

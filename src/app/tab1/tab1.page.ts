@@ -12,12 +12,13 @@ import { Util } from '../util/util';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
 })
-export class Tab1Page  {
+export class Tab1Page implements  ViewDidEnter {
   areaBuscarPokemon!: string;
 
   areaBusca!: AreaBusca;
   endereco!: string;
-  pokemon!: Pokemon;
+  pokemon!: Pokemon | null;
+  pokemons: Pokemon[] = [];
 
   constructor(
     private pokeApiService: PokeApiService,
@@ -25,6 +26,9 @@ export class Tab1Page  {
     private pokemonService: PokemonService,
     private util: Util
   ) {}
+  ionViewDidEnter(): void {
+    this.meusPokemons()
+  }
 
   buscarPokemon(cep: string) {
     this.buscarCep();
@@ -83,15 +87,38 @@ export class Tab1Page  {
   }
 
   capturarPokemon(){
+    if(this.pokemons.length > 0){
+      this.pokemons.forEach(pokemon => {
+        if(pokemon.idPokemon === this.pokemon?.idPokemon){
+          this.util.mostrarMensagem('Você já capturou esse pokemon!', 'warning');
+          this.pokemon = null;
+        }
+      });
+    }
+    if(this.pokemon){
+
     this.pokemonService.capturarPokemon(this.pokemon).subscribe(()=>{
       this.util.mostrarMensagem('Pokemon Capturado', 'success');
+      this.pokemon = null
     },(error: any) => {
       this.util.mostrarMensagem('Erro ao capturar Pokemon', 'danger');
     })
+  }else{
+    this.encontrarPokemon();
+  }
+
+  }
+
+  meusPokemons() {
+    this.pokemonService.meusPokemons().subscribe((pokemons) => {
+      if (pokemons.length > 0) {
+        this.pokemons = pokemons;
+      }
+    });
   }
 
   naoQueroOPokemon(){
-    this.encontrarPokemon()
+    this.encontrarPokemon();
   }
 
   onInput(ev: any){
