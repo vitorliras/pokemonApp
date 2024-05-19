@@ -14,8 +14,10 @@ import { Util } from '../util/util';
 export class Tab2Page implements ViewDidEnter {
   @ViewChild('modal', { static: true }) modal!: IonModal;
   pokemonEnemy!: any;
-  pokemon!: Pokemon;
+  pokemon!: Pokemon | null;
   pokemons: Pokemon[] = [];
+
+  batalhaNova: boolean = false
 
   constructor(
     public photoService: PhotoService,
@@ -52,7 +54,13 @@ export class Tab2Page implements ViewDidEnter {
     }
     if(!this.pokemon){
       this.util.mostrarMensagem('Você não escolheu nenhum pokemon, logo não poderar batalhar!', 'warning' );
+    }else{
+      this.batalhaNova = true;
     }
+  }
+
+  proximaBatalha(){
+    this.getPokemonEnemy();
   }
 
   escolhoEssePokemon(pokemon: Pokemon){
@@ -76,6 +84,10 @@ export class Tab2Page implements ViewDidEnter {
   getPokemonEnemy() {
     this.pokeApiService.getPokeAPI(0).subscribe((pokemonEnemy: any) => {
       this.pokemonEnemy = pokemonEnemy;
+      if(this.batalhaNova){
+        this.pokemon = null;
+        this.abrirModal();
+      }
     });
   }
 
