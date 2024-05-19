@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { AreaBusca } from '../model/area-busca';
 import { PokeApiService } from '../services/poke-api.service';
 import { ViaCepService } from '../services/via-cep.service';
 import { ToastController, ViewDidEnter } from '@ionic/angular';
 import { Pokemon } from '../model/pokemon';
 import { PokemonService } from '../services/pokemon.service';
+import { AreaBusca } from '../model/area-busca';
+import { Util } from '../util/util';
 
 @Component({
   selector: 'app-tab1',
@@ -21,8 +22,8 @@ export class Tab1Page  {
   constructor(
     private pokeApiService: PokeApiService,
     private cepService: ViaCepService,
-    private toastController: ToastController,
-    private pokemonService: PokemonService
+    private pokemonService: PokemonService,
+    private util: Util
   ) {}
 
   buscarPokemon(cep: string) {
@@ -33,7 +34,7 @@ export class Tab1Page  {
     this.cepService.getViaCEPService(this.areaBuscarPokemon).subscribe(
       (retorno: any) => {
         if (retorno.erro) {
-          this.mostrarMensagem('CEP Não Encontrado!', 'warning');
+          this.util.mostrarMensagem('CEP Não Encontrado!', 'warning');
         } else {
           this.areaBusca = {
             bairro: JSON.parse(JSON.stringify(retorno))['bairro'],
@@ -46,7 +47,7 @@ export class Tab1Page  {
         }
       },
       (error: any) => {
-        this.mostrarMensagem('Cep digitado de forma incorreta!', 'danger');
+        this.util.mostrarMensagem('Cep digitado de forma incorreta!', 'danger');
       }
     );
   }
@@ -55,7 +56,7 @@ export class Tab1Page  {
     let id = 0;
     if(this.pokemon){
       let id = Math.floor(Math.random() * 100)
-      if(this.pokemon.id === id){
+      if(this.pokemon.idPokemon === id){
         if(id === 100){
           id--;
         }else{
@@ -66,13 +67,16 @@ export class Tab1Page  {
     this.pokeApiService.getPokeAPI(id).subscribe((pokemon: any) => {
       if (this.areaBusca) {
         this.pokemon = {
-          id: pokemon.id,
+          idPokemon: pokemon.id,
           abilities: pokemon.abilities.length,
           height: pokemon.height,
           weight: pokemon.weight,
           nome: pokemon.name,
           url: pokemon.sprites.other.dream_world.front_default,
-          urlPixelado: pokemon.sprites.front_shiny
+          urlPixelado: pokemon.sprites.front_shiny,
+          qtdDerrota: 0,
+          qtdVitoria: 0,
+          qtdEmpate: 0,
         }
       }
     });
@@ -80,24 +84,14 @@ export class Tab1Page  {
 
   capturarPokemon(){
     this.pokemonService.capturarPokemon(this.pokemon).subscribe(()=>{
-      this.mostrarMensagem('Pokemon Capturado', 'success');
+      this.util.mostrarMensagem('Pokemon Capturado', 'success');
     },(error: any) => {
-      this.mostrarMensagem('Erro ao capturar Pokemon', 'danger');
+      this.util.mostrarMensagem('Erro ao capturar Pokemon', 'danger');
     })
   }
 
   naoQueroOPokemon(){
     this.encontrarPokemon()
-  }
-
-  async mostrarMensagem(message: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 3000,
-      position: 'top',
-      color
-    });
-    toast.present();
   }
 
   onInput(ev: any){

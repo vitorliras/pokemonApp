@@ -12,7 +12,7 @@ export class PokemonService {
 
   constructor(private http: HttpClient) { }
 
-  meuPokedex(): Observable<Pokemon[]> {
+  meusPokemons(): Observable<Pokemon[]> {
     return this.http.get<Pokemon[]>(this.API)
   }
 
@@ -29,6 +29,11 @@ export class PokemonService {
   escolhoEssePokemon(id: number): Observable<Pokemon> {
     const url = `${this.API}/${id}`;
     return this.http.get<Pokemon>(url);
+  }
+
+  resultadoBatalha(pokemonResultado: Pokemon){
+    const url = `${this.API}/${pokemonResultado.id}`;
+    return this.http.put<Pokemon>(url, pokemonResultado);
   }
 
 }
