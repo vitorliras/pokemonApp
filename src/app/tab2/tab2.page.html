@@ -39,7 +39,7 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
-  <div style="display: flex; justify-content: center; align-items: center;">
+  <div *ngIf="pokemons.length>0" style="display: flex; justify-content: center; align-items: center;">
     <ion-button (click)="proximaBatalha()">
       Proxima Batalha
     </ion-button>

@@ -31,7 +31,7 @@ export class Tab3Page implements ViewDidEnter {
         this.pokemons = pokemons;
         this.paginarPokemons();
       } else {
-        this.util.mostrarMensagem('Você não possui nenhum pokemon, logo não poderar batalhar!', 'warning' );
+        this.util.mostrarMensagem('Você não possui nenhum pokemon', 'warning' );
       }
     });
   }

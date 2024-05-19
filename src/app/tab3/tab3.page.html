@@ -6,8 +6,11 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" >
-<div style="height: 89vh; vertical-align: middle; align-content: center;">
+<ion-content  [fullscreen]="true" >
+  <div style="height: 89vh; display: flex; align-items: center; justify-content: center;" *ngIf="pokemonsPaginados.length <= 0">
+    <img src="./assets/pikachu-not-found.png" alt="No Pokémon" style="max-width: 100%; height: auto;">
+  </div>
+<div *ngIf="pokemonsPaginados.length >0" style="height: 89vh; vertical-align: middle; align-content: center;">
 
   <ion-header collapse="condense">
     <ion-toolbar>
@@ -43,3 +46,5 @@
 
 
 </ion-content>
+
+
